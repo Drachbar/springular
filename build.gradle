@@ -27,24 +27,16 @@ node {
 	nodeModulesDir = file("${project.projectDir}/frontend/node_modules") // Lägg till denna rad
 }
 
-
 tasks.named('npm_install') {
 	workingDir = file("${project.projectDir}/frontend")
 }
-
-
-import org.gradle.internal.os.OperatingSystem
 
 task buildAngular(type: NpmTask, dependsOn: 'npm_install') {
 	group = 'Angular'
 	description = 'Bygg Angular-applikationen och kopiera de genererade filerna till Spring Boot-projektet'
 
-	if (OperatingSystem.current().isWindows()) {
-		execOverrides {
-			it.environment += ['PATH': "${project.node.nodeModulesDir}/.bin" + File.pathSeparator + System.getenv('PATH')]
-		}
-	} else {
-		environment(['PATH': "${project.node.nodeModulesDir}/.bin" + File.pathSeparator + System.getenv('PATH')])
+	execOverrides {
+		it.environment += ['PATH': "${project.node.nodeModulesDir}/.bin" + File.pathSeparator + System.getenv('PATH')]
 	}
 
 	inputs.dir("frontend/src")
@@ -60,8 +52,9 @@ task buildAngular(type: NpmTask, dependsOn: 'npm_install') {
 	}
 }
 
-
-bootRun.dependsOn buildAngular
+bootRun {
+	dependsOn buildAngular
+}
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
